@@ -9,7 +9,7 @@ import os
 from os.path import join, dirname
 from dotenv import load_dotenv
 
-dotenv_path = join(dirname(__file__), 'C:/Users/Maynar/Desktop/pythonProject/.env')
+dotenv_path = join(dirname(__file__), 'C:/Users/Maynar/Desktop/LimiteDeEmpleados/.env')
 load_dotenv(dotenv_path)
 
 # Environment Variables
@@ -34,7 +34,7 @@ class Home:
         self.dni = '//*[@id="DNI"]'
         self.save_changes = '//*[@id="modalNuevoEmpleado"]/div[2]/div/div[3]/button[2]'
         self.entendido = '//*[@id="modal-procesar-respuesta"]/div[2]/div/div[3]/button'
-        self.msg_error = '//*[@id="modal-procesar-respuesta"]/div[2]/div/div[2]/label'
+        self.msg_error = '//*[@id="modal-procesar-respuesta"]/div/div/div/label'
 
 
     # -- Get Elements --
@@ -78,32 +78,31 @@ class Home:
     def gen_employ(self):
         # Generar 20 empleados en loop
         # El registro solo se anula en localhost
-        x = range(30)
+        self.driver.get(BASE_URL)
+        self.get_user().send_keys(USER)
+        self.get_password().send_keys(PASSWORD)
+        self.get_btn_ingresar().click()
+        time.sleep(3)
+        self.get_administracion().click()
+        self.get_empleados().click()
+
+        x = range(31)
         for n in x:
             print(n)
-            self.driver.get(BASE_URL)
-            self.get_user().send_keys(USER)
-            self.get_password().send_keys(PASSWORD)
-            self.get_btn_ingresar().click()
-            time.sleep(3)
-            self.get_administracion().click()
-            self.get_empleados().click()
-            time.sleep(5)
             self.get_btn_add().click()
-            time.sleep(5)
+            time.sleep(6)
             # Data Employee
             self.get_inpt_name().send_keys(names.get_first_name())
             self.get_inpt_surname().send_keys(names.get_last_name())
             self.get_dni().send_keys(str(random.randint(20000000, 40000000)))
             self.get_btn_save_changes().click()
-            time.sleep(3)
-            self.get_entendido().click()
+            time.sleep(6)
 
-        time.sleep(4)
+        msg_error = WebDriverWait(self.driver, 0.1).until(EC.presence_of_element_located((By.XPATH, self.msg_error)))
 
-        msg_error = self.get_msg_error().text
+        assert msg_error
 
-        assert msg_error == 'Superó la cantidad de legajos permitidos!'
+
 
 
 
